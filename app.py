@@ -59,7 +59,12 @@ def update_score(current_score: int, outcome: str, attempt_number: int):
             return current_score + 5
         return current_score - 5
 
+    # FIXME: Logic breaks here
+    # Collaboration: AI noticed inconsistent scoring where "Too Low" always deducted points
+    # while "Too High" alternated (+5/-5). User accepted fix to make both consistent.
     if outcome == "Too Low":
+        if attempt_number % 2 == 0:
+            return current_score + 5
         return current_score - 5
 
     return current_score
@@ -93,7 +98,10 @@ if "secret" not in st.session_state:
     st.session_state.secret = random.randint(low, high)
 
 if "attempts" not in st.session_state:
-    st.session_state.attempts = 1
+    # FIXME: Logic breaks here
+    # Collaboration: AI caught attempts starting at 1 instead of 0, causing incorrect "Attempts left" count.
+    # User confirmed the fix to initialize at 0 for accurate attempt tracking.
+    st.session_state.attempts = 0
 
 if "score" not in st.session_state:
     st.session_state.score = 0
@@ -106,8 +114,11 @@ if "history" not in st.session_state:
 
 st.subheader("Make a guess")
 
+# FIXME: Logic breaks here
+# Collaboration: AI identified hardcoded range (1-100) that didn't match difficulty levels.
+# User approved fix to use dynamic {low} and {high} variables from get_range_for_difficulty().
 st.info(
-    f"Guess a number between 1 and 100. "
+    f"Guess a number between {low} and {high}. "
     f"Attempts left: {attempt_limit - st.session_state.attempts}"
 )
 
